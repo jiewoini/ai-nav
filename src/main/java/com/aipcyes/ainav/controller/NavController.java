@@ -1,8 +1,11 @@
 package com.aipcyes.ainav.controller;
 
 import com.aipcyes.ainav.entity.Link;
+import com.aipcyes.ainav.entity.UserAgentInfo;
 import com.aipcyes.ainav.entity.VisitLog;
 import com.aipcyes.ainav.mapper.VisitLogMapper;
+import com.aipcyes.ainav.util.UserAgentUtils;
+import com.aipcyes.ainav.util.VisitLogBuilder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
@@ -23,9 +26,27 @@ public class NavController {
     @GetMapping("/")
     public String home(Model model, HttpServletRequest request) {
         VisitLog log = new VisitLog();
+
+        /*String userAgent = request.getHeader("User-Agent");
+        String ip = getClientIp(request);
+        String referer = request.getHeader("Referer");
+
         log.setVisitTime(LocalDateTime.now());
-        log.setIp(getClientIp(request));
-        log.setUserAgent(request.getHeader("User-Agent"));
+        log.setIp(ip);
+        log.setUserAgent(userAgent);
+        log.setReferer(referer);
+
+        // 解析 User-Agent
+        UserAgentInfo info = UserAgentUtils.parse(userAgent);
+        log.setBrowser(info.getBrowser());
+        log.setOs(info.getOs());
+        log.setDeviceType(info.getDeviceType());
+        log.setIsBot(info.isBot());
+        log.setBotName(info.getBotName());
+*/
+        // 可选：解析 IP 地理位置（使用 ip2region 或 GeoLite）
+//        log.setGeoLocation(IpUtils.getGeoLocation(ip));
+        log = VisitLogBuilder.buildFromRequest(request);
         visitLogMapper.insertVisitLog(log);
 
         long visitCount = visitLogMapper.countVisitLogs();

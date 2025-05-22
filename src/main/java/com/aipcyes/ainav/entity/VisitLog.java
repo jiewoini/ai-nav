@@ -10,7 +10,17 @@ public class VisitLog {
     private LocalDateTime visitTime;
     private String ip;
     private String userAgent;
-
+    private String referer;
+    private String browser;
+    private String os;
+    private String deviceType;
+    private Boolean isBot;
+    private String botName;
+    private String geoLocation;
+    private String country;
+    private String province;
+    private String city;
+    private String isp;
 
 
     public Long getId() {

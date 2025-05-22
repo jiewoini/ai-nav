@@ -2,8 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.aipcyes.ainav.mapper.VisitLogMapper">
     <insert id="insertVisitLog" parameterType="com.aipcyes.ainav.entity.VisitLog" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO visit_log (visit_time, ip, user_agent)
-        VALUES (#{visitTime}, #{ip}, #{userAgent})
+        INSERT INTO visit_log (
+            visit_time,
+            ip,
+            user_agent,
+            referer,
+            browser,
+            os,
+            device_type,
+            is_bot,
+            bot_name,
+            country,
+            province,
+            city,
+            isp
+        ) VALUES (
+                     #{visitTime},
+                     #{ip},
+                     #{userAgent},
+                     #{referer},
+                     #{browser},
+                     #{os},
+                     #{deviceType},
+                     #{isBot},
+                     #{botName},
+                     #{country},
+                     #{province},
+                     #{city},
+                     #{isp}
+                 )
     </insert>
     <select id="countVisitLogs" resultType="int">
         SELECT COUNT(*) FROM visit_log
