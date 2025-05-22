@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIPCYES - 你的AI网站导航</title>
+
+    <style>
+        :root {
+            --primary: #4a6bff;
+            --secondary: #6c757d;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --hover: #3a56d4;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            background: #f5f7ff;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary), #6a11cb);
+            color: white;
+            padding: 1rem 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .category-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+        }
+
+        .category {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            width: 350px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .category h2 {
+            color: var(--primary);
+            margin-top: 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #eee;
+            font-size: 1.4rem;
+        }
+
+        .link-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .link-item {
+            margin: 0.8rem 0;
+        }
+
+        .link-item a {
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+            text-decoration: none;
+            padding: 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .link-item a:hover {
+            background: rgba(74, 107, 255, 0.1);
+            color: var(--hover);
+            transform: translateX(5px);
+        }
+
+        .link-item a::before {
+            content: "→";
+            margin-right: 8px;
+            color: var(--primary);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .link-item a:hover::before {
+            opacity: 1;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .category {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h1>AIPCYES - 你的AI网站导航</h1>
+    <p>精选优质AI工具，助力高效工作与学习</p>
+</div>
+
+<div class="container">
+    <div class="category-group">
+        <!-- AI对话聊天 -->
+        <div class="category">
+            <h2>🤖 AI对话聊天</h2>
+            <ul class="link-list">
+                <li class="link-item"><a href="https://xinghuo.xfyun.cn/" target="_blank">讯飞星火AI</a></li>
+                <li class="link-item"><a href="https://doubao.paluai.com/" target="_blank">豆包AI</a></li>
+                <li class="link-item"><a href="https://chatglm.cn/" target="_blank">智谱清言</a></li>
+                <li class="link-item"><a href="https://chat.deepseek.com/" target="_blank">DeepSeek Chat</a></li>
+                <li class="link-item"><a href="https://yiyan.baidu.com/" target="_blank">文心一言</a></li>
+                <li class="link-item"><a href="https://tongyi.aliyun.com/" target="_blank">通义千问</a></li>
+            </ul>
+        </div>
+
+        <!-- AI写作工具 -->
+        <div class="category">
+            <h2>✍️ AI写作工具</h2>
+            <ul class="link-list">
+                <li class="link-item"><a href="https://huixie.iflyrec.com/" target="_blank">讯飞绘文</a></li>
+                <li class="link-item"><a href="https://ibiling.cn/" target="_blank">笔灵AI写作</a></li>
+                <li class="link-item"><a href="https://effidit.qq.com/" target="_blank">Effidit(腾讯)</a></li>
+                <li class="link-item"><a href="https://xiezuocat.com/" target="_blank">秘塔写作猫</a></li>
+                <li class="link-item"><a href="https://shenyandayi.com/" target="_blank">深言达意</a></li>
+            </ul>
+        </div>
+
+        <!-- AI绘画设计 -->
+        <div class="category">
+            <h2>🎨 AI绘画设计</h2>
+            <ul class="link-list">
+                <li class="link-item"><a href="https://yige.baidu.com/" target="_blank">文心一格</a></li>
+                <li class="link-item"><a href="https://tongyi.aliyun.com/wanxiang/" target="_blank">通义万相</a></li>
+                <li class="link-item"><a href="https://www.acgnai.art/" target="_blank">触手AI</a></li>
+                <li class="link-item"><a href="https://liblib.art/" target="_blank">哩布哩布AI</a></li>
+                <li class="link-item"><a href="https://www.gaoding.com/" target="_blank">稿定AI设计</a></li>
+            </ul>
+        </div>
+
+        <!-- AI编程开发 -->
+        <div class="category">
+            <h2>💻 AI编程开发</h2>
+            <ul class="link-list">
+                <li class="link-item"><a href="https://codegeex.cn/" target="_blank">CodeGeeX</a></li>
+                <li class="link-item"><a href="https://lingma.aliyun.com/" target="_blank">通义灵码</a></li>
+                <li class="link-item"><a href="https://deepseek.com/" target="_blank">DeepSeek Coder</a></li>
+                <li class="link-item"><a href="https://mars.doubao.com/" target="_blank">豆包MarsCode</a></li>
+                <li class="link-item"><a href="https://so.csdn.net/chat" target="_blank">C知道(CSDN)</a></li>
+            </ul>
+        </div>
+
+        <!-- AI视频制作 -->
+        <div class="category">
+            <h2>🎬 AI视频制作</h2>
+            <ul class="link-list">
+                <li class="link-item"><a href="https://lv.ulikecam.com/" target="_blank">剪映AI</a></li>
+                <li class="link-item"><a href="https://kling.kuaishou.com/" target="_blank">可灵AI(快手)</a></li>
+                <li class="link-item"><a href="https://zenvideo.qq.com/" target="_blank">腾讯智影</a></li>
+                <li class="link-item"><a href="https://chanjing.ai/" target="_blank">蝉镜AI</a></li>
+                <li class="link-item"><a href="https://jimeng.ai/" target="_blank">即梦AI视频</a></li>
+            </ul>
+        </div>
+
+        <!-- AI学术研究 -->
+        <div class="category">
+            <h2>📚 AI学术研究</h2>
+            <ul class="link-list">
+                <li class="link-item"><a href="https://xinghuo.xfyun.cn/paper" target="_blank">讯飞AI论文</a></li>
+                <li class="link-item"><a href="https://aistudio.baidu.com/" target="_blank">飞桨AI Studio</a></li>
+                <li class="link-item"><a href="https://www.paddlepaddle.org.cn/" target="_blank">PaddlePaddle</a></li>
+                <li class="link-item"><a href="https://www.aipaperpass.com/" target="_blank">千笔AI论文</a></li>
+                <li class="link-item"><a href="https://www.mmc.cc/" target="_blank">茅茅虫论文</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <p>© 2025 AIPCY AI导航站 | 数据定期更新 | 推荐使用Chrome浏览器 总访问人数：<span th:text="${visitCount}">0</span></p>
+</div>
+</body>
+</html>
