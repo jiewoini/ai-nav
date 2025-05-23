@@ -4,14 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AIPCYES - 你的AI网站导航</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #4a6bff;
+            --primary-light: rgba(74, 107, 255, 0.1);
             --secondary: #6c757d;
             --light: #f8f9fa;
             --dark: #343a40;
             --hover: #3a56d4;
+            --bg-gradient: linear-gradient(135deg, #4a6bff 0%, #6a11cb 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --search-shadow: 0 4px 20px rgba(74, 107, 255, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
@@ -20,60 +28,260 @@
             background: #f5f7ff;
             color: #333;
             line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary), #6a11cb);
+            background: var(--bg-gradient);
             color: white;
-            padding: 1rem 1rem;
+            padding: 2rem 1rem 3rem;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 Q50,80 0,100 Z"></path></svg>') no-repeat;
+            background-size: 100% 100%;
+            opacity: 0.5;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            font-weight: 700;
         }
 
         .header p {
-            margin: 0.5rem 0 0;
-            font-size: 1.1rem;
+            margin: 0.8rem auto 0;
+            font-size: 1.2rem;
             opacity: 0.9;
+            max-width: 700px;
+        }
+
+        /* 时间和天气样式 */
+        .header-info {
+            position: absolute;
+            right: 2rem;
+            top: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            color: white;
+            font-size: 0.95rem;
+        }
+
+        .time-weather {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+        }
+
+        .weather-icon {
+            font-size: 1.2rem;
+        }
+
+        .time {
+            font-weight: 500;
+        }
+
+        .weather-temp {
+            font-weight: 500;
+        }
+
+        .weather-city {
+            opacity: 0.9;
+            font-size: 0.85rem;
+        }
+
+        .weather-loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 搜索框样式 */
+        .search-container {
+            max-width: 800px;
+            margin: -1.5rem auto 2rem;
+            position: relative;
+            z-index: 10;
+            padding: 0 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            background: white;
+            border-radius: 50px;
+            box-shadow: var(--search-shadow);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(74, 107, 255, 0.3);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            color: var(--dark);
+        }
+
+        .search-engine-selector {
+            display: flex;
+            align-items: center;
+            background: var(--primary-light);
+            border-radius: 50px;
+            margin-right: 10px;
+            padding: 0 15px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .search-engine-selector span {
+            margin-right: 8px;
+            font-size: 0.9rem;
+            color: var(--primary);
+        }
+
+        .search-engine-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            padding: 10px 0;
+            min-width: 150px;
+            z-index: 100;
+            display: none;
+        }
+
+        .search-engine-selector:hover .search-engine-dropdown {
+            display: block;
+        }
+
+        .search-engine-option {
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-engine-option:hover {
+            background: var(--primary-light);
+        }
+
+        .search-engine-option i {
+            margin-right: 8px;
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.8rem;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .search-btn:hover {
+            background: var(--hover);
+        }
+
+        .search-btn i {
+            margin-right: 8px;
         }
 
         .container {
             max-width: 1200px;
             margin: 2rem auto;
-            padding: 0 1rem;
+            padding: 0 1.5rem;
+            flex: 1;
         }
 
         .category-group {
             display: flex;
             flex-wrap: wrap;
-            gap: 1.5rem;
+            gap: 2rem;
             justify-content: center;
         }
 
         .category {
             background: white;
-            border-radius: 10px;
-            padding: 1.5rem;
-            width: 350px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 1.8rem;
+            width: calc(33.333% - 2rem);
+            box-shadow: var(--card-shadow);
             transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
         .category:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
         }
 
         .category h2 {
             color: var(--primary);
-            margin-top: 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #eee;
-            font-size: 1.4rem;
+            margin: 0 0 1.2rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .category h2 i {
+            margin-right: 10px;
+            width: 28px;
+            height: 28px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
         }
 
         .link-list {
@@ -84,6 +292,7 @@
 
         .link-item {
             margin: 0.8rem 0;
+            position: relative;
         }
 
         .link-item a {
@@ -91,27 +300,48 @@
             align-items: center;
             color: var(--dark);
             text-decoration: none;
-            padding: 0.5rem;
-            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
             transition: all 0.2s;
+            background: transparent;
+            position: relative;
+            overflow: hidden;
+            font-weight: 500;
         }
 
         .link-item a:hover {
-            background: rgba(74, 107, 255, 0.1);
+            background: var(--primary-light);
             color: var(--hover);
             transform: translateX(5px);
         }
 
         .link-item a::before {
-            content: "→";
-            margin-right: 8px;
-            color: var(--primary);
-            opacity: 0;
-            transition: opacity 0.2s;
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transform-origin: center top;
+            transition: transform 0.3s ease;
         }
 
         .link-item a:hover::before {
-            opacity: 1;
+            transform: scaleY(1);
+        }
+
+        .link-item i {
+            margin-right: 12px;
+            color: var(--secondary);
+            width: 20px;
+            text-align: center;
+            transition: color 0.2s;
+        }
+
+        .link-item a:hover i {
+            color: var(--primary);
         }
 
         .footer {
@@ -119,100 +349,338 @@
             padding: 2rem 0;
             color: var(--secondary);
             font-size: 0.9rem;
+            background: white;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+        }
+
+        .visit-count {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 992px) {
+            .category {
+                width: calc(50% - 2rem);
+            }
         }
 
         @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .header-info {
+                position: static;
+                justify-content: center;
+                margin-top: 1rem;
+                padding-bottom: 1rem;
+            }
+
+            .time-weather {
+                padding: 0.4rem 0.8rem;
+            }
+
             .category {
                 width: 100%;
             }
+
+            .search-box {
+                flex-direction: column;
+                border-radius: 12px;
+            }
+
+            .search-engine-selector {
+                border-radius: 12px 12px 0 0;
+                margin-right: 0;
+                padding: 10px 15px;
+                justify-content: center;
+            }
+
+            .search-input {
+                border-radius: 0;
+            }
+
+            .search-btn {
+                border-radius: 0 0 12px 12px;
+                padding: 12px;
+                justify-content: center;
+            }
         }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category {
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .category:nth-child(1) { animation-delay: 0.1s; }
+        .category:nth-child(2) { animation-delay: 0.2s; }
+        .category:nth-child(3) { animation-delay: 0.3s; }
+        .category:nth-child(4) { animation-delay: 0.4s; }
+        .category:nth-child(5) { animation-delay: 0.5s; }
+        .category:nth-child(6) { animation-delay: 0.6s; }
     </style>
 </head>
 <body>
 <div class="header">
-    <h1>AIPCYES - 你的AI网站导航</h1>
-    <p>精选优质AI工具，助力高效工作与学习</p>
+    <div class="header-content">
+        <div class="header-info">
+            <div class="time-weather">
+                <div class="time" id="current-time">--:--:--</div>
+                <div class="weather-info" id="weather-info">
+                    <div class="weather-loading"></div>
+                    <span>获取天气中...</span>
+                </div>
+            </div>
+        </div>
+
+        <h1>AIPCYES - 小导航</h1>
+        <p>精选优质AI工具，助力高效工作与学习</p>
+    </div>
+</div>
+
+<!-- 搜索框 -->
+<div class="search-container">
+    <div class="search-box">
+        <div class="search-engine-selector">
+            <span id="current-engine">百度</span>
+            <i class="fas fa-chevron-down"></i>
+            <div class="search-engine-dropdown">
+                <div class="search-engine-option" data-engine="baidu" data-url="https://www.baidu.com/s?wd=">
+                    <i class="fab fa-baidu"></i>百度
+                </div>
+                <div class="search-engine-option" data-engine="google" data-url="https://www.google.com/search?q=">
+                    <i class="fab fa-google"></i>谷歌
+                </div>
+            </div>
+        </div>
+        <input type="text" class="search-input" id="search-query" placeholder="众人寻她千百度" autocomplete="off">
+        <button class="search-btn" id="search-button">
+            <i class="fas fa-search"></i>搜索
+        </button>
+    </div>
 </div>
 
 <div class="container">
     <div class="category-group">
-        <!-- AI对话聊天 -->
-        <div class="category">
-            <h2>🤖 AI对话聊天</h2>
+        <div class="category" th:each="entry : ${categoryToolMap}">
+            <h2><i th:text="${entry.key.icon}"></i><span th:text="${entry.key.name}">分类名</span></h2>
             <ul class="link-list">
-                <li class="link-item"><a href="https://xinghuo.xfyun.cn/" target="_blank">讯飞星火AI</a></li>
-                <li class="link-item"><a href="https://doubao.paluai.com/" target="_blank">豆包AI</a></li>
-                <li class="link-item"><a href="https://chatglm.cn/" target="_blank">智谱清言</a></li>
-                <li class="link-item"><a href="https://chat.deepseek.com/" target="_blank">DeepSeek Chat</a></li>
-                <li class="link-item"><a href="https://yiyan.baidu.com/" target="_blank">文心一言</a></li>
-                <li class="link-item"><a href="https://tongyi.aliyun.com/" target="_blank">通义千问</a></li>
-            </ul>
-        </div>
-
-        <!-- AI写作工具 -->
-        <div class="category">
-            <h2>✍️ AI写作工具</h2>
-            <ul class="link-list">
-                <li class="link-item"><a href="https://huixie.iflyrec.com/" target="_blank">讯飞绘文</a></li>
-                <li class="link-item"><a href="https://ibiling.cn/" target="_blank">笔灵AI写作</a></li>
-                <li class="link-item"><a href="https://effidit.qq.com/" target="_blank">Effidit(腾讯)</a></li>
-                <li class="link-item"><a href="https://xiezuocat.com/" target="_blank">秘塔写作猫</a></li>
-                <li class="link-item"><a href="https://shenyandayi.com/" target="_blank">深言达意</a></li>
-            </ul>
-        </div>
-
-        <!-- AI绘画设计 -->
-        <div class="category">
-            <h2>🎨 AI绘画设计</h2>
-            <ul class="link-list">
-                <li class="link-item"><a href="https://yige.baidu.com/" target="_blank">文心一格</a></li>
-                <li class="link-item"><a href="https://tongyi.aliyun.com/wanxiang/" target="_blank">通义万相</a></li>
-                <li class="link-item"><a href="https://www.acgnai.art/" target="_blank">触手AI</a></li>
-                <li class="link-item"><a href="https://liblib.art/" target="_blank">哩布哩布AI</a></li>
-                <li class="link-item"><a href="https://www.gaoding.com/" target="_blank">稿定AI设计</a></li>
-            </ul>
-        </div>
-
-        <!-- AI编程开发 -->
-        <div class="category">
-            <h2>💻 AI编程开发</h2>
-            <ul class="link-list">
-                <li class="link-item"><a href="https://codegeex.cn/" target="_blank">CodeGeeX</a></li>
-                <li class="link-item"><a href="https://lingma.aliyun.com/" target="_blank">通义灵码</a></li>
-                <li class="link-item"><a href="https://deepseek.com/" target="_blank">DeepSeek Coder</a></li>
-                <li class="link-item"><a href="https://mars.doubao.com/" target="_blank">豆包MarsCode</a></li>
-                <li class="link-item"><a href="https://so.csdn.net/chat" target="_blank">C知道(CSDN)</a></li>
-            </ul>
-        </div>
-
-        <!-- AI视频制作 -->
-        <div class="category">
-            <h2>🎬 AI视频制作</h2>
-            <ul class="link-list">
-                <li class="link-item"><a href="https://lv.ulikecam.com/" target="_blank">剪映AI</a></li>
-                <li class="link-item"><a href="https://kling.kuaishou.com/" target="_blank">可灵AI(快手)</a></li>
-                <li class="link-item"><a href="https://zenvideo.qq.com/" target="_blank">腾讯智影</a></li>
-                <li class="link-item"><a href="https://chanjing.ai/" target="_blank">蝉镜AI</a></li>
-                <li class="link-item"><a href="https://jimeng.ai/" target="_blank">即梦AI视频</a></li>
-            </ul>
-        </div>
-
-        <!-- AI学术研究 -->
-        <div class="category">
-            <h2>📚 AI学术研究</h2>
-            <ul class="link-list">
-                <li class="link-item"><a href="https://xinghuo.xfyun.cn/paper" target="_blank">讯飞AI论文</a></li>
-                <li class="link-item"><a href="https://aistudio.baidu.com/" target="_blank">飞桨AI Studio</a></li>
-                <li class="link-item"><a href="https://www.paddlepaddle.org.cn/" target="_blank">PaddlePaddle</a></li>
-                <li class="link-item"><a href="https://www.aipaperpass.com/" target="_blank">千笔AI论文</a></li>
-                <li class="link-item"><a href="https://www.mmc.cc/" target="_blank">茅茅虫论文</a></li>
+                <li class="link-item" th:each="tool : ${entry.value}">
+                    <a th:href="${tool.url}" target="_blank">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span th:text="${tool.name}">工具名</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
 </div>
 
 <div class="footer">
-    <p>© 2025 AIPCY AI导航站 | 数据定期更新 | 推荐使用Chrome浏览器 总访问人数：<span th:text="${visitCount}">0</span></p>
+    <p>© 2025 AIPCY AI导航站 | 数据定期更新 | 推荐使用Chrome浏览器</p>
+    <p>总访问人数：<span class="visit-count" th:text="${visitCount}">0</span></p>
 </div>
+
+<script>
+    // 获取客户端IP地址
+    async function getClientIP() {
+        try {
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            return data.ip;
+        } catch (error) {
+            console.error('获取IP失败:', error);
+            return null;
+        }
+    }
+
+    // 通过IP获取地理位置
+    async function getLocationByIP(ip) {
+        try {
+            // 使用ip-api.com的免费服务（无需API key）
+            const response = await fetch(`https://ipapi.co/${ip || ''}/json/`);
+            const data = await response.json();
+
+            if(!data.error) {
+                return {
+                    city: data.city,
+                    region: data.region,
+                    country: data.country_name,
+                    lat: data.latitude,
+                    lon: data.longitude
+                };
+            }
+            return null;
+        } catch (error) {
+            console.error('获取位置失败:', error);
+            return null;
+        }
+    }
+
+    // 获取天气数据（示例使用和风天气API）
+    async function getWeather(location) {
+        try {
+            // 这里需要替换成您自己的API key
+            const API_KEY = 'xxxx'; // 替换为您的和风天气API Key
+            const url = `https://devapi.qweather.com/v7/weather/now?location=${location.lon},${location.lat}&key=${API_KEY}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if(data.code === '200') {
+                return {
+                    temp: data.now.temp,
+                    text: data.now.text,
+                    icon: data.now.icon,
+                    humidity: data.now.humidity,
+                    wind: data.now.windScale
+                };
+            }
+            return null;
+        } catch (error) {
+            console.error('获取天气失败:', error);
+            return null;
+        }
+    }
+
+    // 更新天气显示
+    function updateWeatherDisplay(city, weather) {
+        const weatherIcon = getWeatherIcon(weather.icon);
+        document.getElementById('weather-info').innerHTML = `
+            <i class="weather-icon ${weatherIcon}"></i>
+            <span class="weather-temp">${weather.temp}°C</span>
+            <span class="weather-city">${city}</span>
+        `;
+    }
+
+    // 根据天气代码获取图标
+    function getWeatherIcon(weatherCode) {
+        // 简化的天气图标映射
+        const iconMap = {
+            '100': 'fas fa-sun',         // 晴
+            '101': 'fas fa-cloud-sun',   // 多云
+            '102': 'fas fa-cloud',       // 少云
+            '103': 'fas fa-cloud',       // 晴间多云
+            '104': 'fas fa-cloud',       // 阴
+            '200-299': 'fas fa-wind',    // 风
+            '300-399': 'fas fa-cloud-rain', // 雨
+            '400-499': 'fas fa-snowflake', // 雪
+            '500-599': 'fas fa-smog',    // 雾
+            '900-999': 'fas fa-bolt'     // 极端天气
+        };
+
+        // 检查具体代码
+        if(weatherCode >= 200 && weatherCode < 300) return iconMap['200-299'];
+        if(weatherCode >= 300 && weatherCode < 400) return iconMap['300-399'];
+        if(weatherCode >= 400 && weatherCode < 500) return iconMap['400-499'];
+        if(weatherCode >= 500 && weatherCode < 600) return iconMap['500-599'];
+        if(weatherCode >= 900) return iconMap['900-999'];
+
+        // 默认返回晴天图标
+        return iconMap[weatherCode] || iconMap['100'];
+    }
+
+    // 页面加载完成后执行
+    document.addEventListener('DOMContentLoaded', async function() {
+        // 更新时间
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // 获取天气信息
+        try {
+            const ip = await getClientIP();
+            const location = await getLocationByIP(ip);
+
+            if(location) {
+                const weather = await getWeather(location);
+                if(weather) {
+                    updateWeatherDisplay(location.city, weather);
+                } else {
+                    showWeatherError();
+                }
+            } else {
+                showWeatherError();
+            }
+        } catch (error) {
+            console.error('天气加载失败:', error);
+            showWeatherError();
+        }
+
+        function showWeatherError() {
+            document.getElementById('weather-info').innerHTML = `
+                <i class="fas fa-university"></i>
+                <span>天气服务暂不可用</span>
+            `;
+        }
+
+        // 搜索功能实现
+        const searchEngineOptions = document.querySelectorAll('.search-engine-option');
+        const currentEngine = document.getElementById('current-engine');
+        const searchInput = document.getElementById('search-query');
+        const searchButton = document.getElementById('search-button');
+
+        let currentEngineUrl = 'https://www.baidu.com/s?wd=';
+
+        // 切换搜索引擎
+        searchEngineOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const engineName = this.getAttribute('data-engine');
+                const engineUrl = this.getAttribute('data-url');
+
+                currentEngine.textContent = this.textContent.trim();
+                currentEngineUrl = engineUrl;
+
+                // 更新图标
+                const iconClass = this.querySelector('i').className;
+                currentEngine.innerHTML = `<i class="${iconClass}"></i> ${this.textContent.trim()}`;
+            });
+        });
+
+        // 执行搜索
+        function performSearch() {
+            const query = searchInput.value.trim();
+            if (query) {
+                window.open(currentEngineUrl + encodeURIComponent(query), '_blank');
+            }
+        }
+
+        // 点击搜索按钮
+        searchButton.addEventListener('click', performSearch);
+
+        // 回车键搜索
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+    });
+
+    function updateTime() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('zh-CN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+        document.getElementById('current-time').textContent = timeStr;
+    }
+</script>
 </body>
 </html>

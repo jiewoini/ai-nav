@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aipcyes.ainav.mapper.AiToolMapper">
+    <select id="findByCategoryId" resultType="com.aipcyes.ainav.entity.AiTool">
+        SELECT * FROM ai_tool WHERE category_id = #{categoryId} AND enabled = TRUE ORDER BY sort_order ASC
+    </select>
+</mapper>
