@@ -7,6 +7,7 @@ import com.aipcyes.ainav.service.CategoryService;
 import com.aipcyes.ainav.util.VisitLogBuilder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

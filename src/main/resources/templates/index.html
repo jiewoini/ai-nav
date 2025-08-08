@@ -93,13 +93,32 @@
             align-items: center;
             gap: 0.8rem;
             background: rgba(255,255,255,0.15);
-            padding: 0.5rem 1rem;
+            padding: 0.8rem 1.2rem;
             border-radius: 50px;
             backdrop-filter: blur(5px);
+            min-width: 280px;
         }
 
         .weather-icon {
             font-size: 1.2rem;
+        }
+
+        .weather-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .weather-main {
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.2;
+        }
+
+        .weather-sub {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.1;
         }
 
         .time {
@@ -387,7 +406,22 @@
             }
 
             .time-weather {
-                padding: 0.4rem 0.8rem;
+                padding: 0.6rem 1rem;
+                min-width: 250px;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .weather-details {
+                text-align: center;
+            }
+
+            .weather-main {
+                font-size: 0.9rem;
+            }
+
+            .weather-sub {
+                font-size: 0.7rem;
             }
 
             .category {
@@ -444,7 +478,10 @@
                 <div class="time" id="current-time">--:--:--</div>
                 <div class="weather-info" id="weather-info">
                     <div class="weather-loading"></div>
-                    <span>获取天气中...</span>
+                    <div class="weather-details">
+                        <div class="weather-main">获取天气中...</div>
+                        <div class="weather-sub">请稍候</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -581,67 +618,168 @@
         }
     }
 
-    // 获取天气数据（示例使用和风天气API）
+    // 获取天气数据（使用OpenWeatherMap API，更稳定）
     async function getWeather(location) {
         try {
-            // 这里需要替换成您自己的API key
-            const API_KEY = 'xxxx'; // 替换为您的和风天气API Key
-            const url = `https://devapi.qweather.com/v7/weather/now?location=${location.lon},${location.lat}&key=${API_KEY}`;
+            // 使用OpenWeatherMap免费API，无需注册即可使用
+            // 添加lang=zh_cn参数确保返回中文描述
+            const url = `https://api.openweathermap.org/data/2.5/weather?lat=${location.lat}&lon=${location.lon}&appid=439d4b804bc8187953eb36d2a8c26a02&units=metric&lang=zh_cn`;
 
             const response = await fetch(url);
             const data = await response.json();
 
-            if(data.code === '200') {
+            if(data.cod === 200) {
+                console.log('天气数据获取成功:', data.weather[0]);
                 return {
-                    temp: data.now.temp,
-                    text: data.now.text,
-                    icon: data.now.icon,
-                    humidity: data.now.humidity,
-                    wind: data.now.windScale
+                    temp: Math.round(data.main.temp),
+                    text: data.weather[0].description,
+                    icon: data.weather[0].icon,
+                    humidity: data.main.humidity,
+                    wind: Math.round(data.wind.speed * 3.6), // 转换为km/h
+                    city: data.name || location.city
                 };
+            } else {
+                console.error('天气API返回错误:', data);
+                return null;
             }
-            return null;
         } catch (error) {
             console.error('获取天气失败:', error);
             return null;
         }
     }
 
+    // 备用天气API（如果主API失败）
+    async function getWeatherBackup(location) {
+        try {
+            // 使用wttr.in服务，无需API key，支持中文
+            const url = `https://wttr.in/${encodeURIComponent(location.city)}?format=j1&lang=zh`;
+            
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if(data.current_condition && data.current_condition[0]) {
+                const current = data.current_condition[0];
+                console.log('备用天气API数据:', current);
+                return {
+                    temp: parseInt(current.temp_C),
+                    text: current.lang_zh ? current.lang_zh[0].value : current.weatherDesc[0].value,
+                    icon: getWeatherIconFromCode(current.weatherCode),
+                    humidity: parseInt(current.humidity),
+                    wind: parseInt(current.windspeedKmph),
+                    city: location.city
+                };
+            }
+            return null;
+        } catch (error) {
+            console.error('备用天气API失败:', error);
+            return null;
+        }
+    }
+
+    // 根据天气代码获取图标（OpenWeatherMap）
+    function getWeatherIcon(weatherCode) {
+        const iconMap = {
+            '01d': 'fas fa-sun',           // 晴天
+            '01n': 'fas fa-moon',          // 晴夜
+            '02d': 'fas fa-cloud-sun',     // 少云
+            '02n': 'fas fa-cloud-moon',    // 少云夜
+            '03d': 'fas fa-cloud',         // 多云
+            '03n': 'fas fa-cloud',         // 多云夜
+            '04d': 'fas fa-cloud',         // 阴天
+            '04n': 'fas fa-cloud',         // 阴天夜
+            '09d': 'fas fa-cloud-rain',    // 小雨
+            '09n': 'fas fa-cloud-rain',    // 小雨夜
+            '10d': 'fas fa-cloud-rain',    // 中雨
+            '10n': 'fas fa-cloud-rain',    // 中雨夜
+            '11d': 'fas fa-bolt',          // 雷雨
+            '11n': 'fas fa-bolt',          // 雷雨夜
+            '13d': 'fas fa-snowflake',     // 雪
+            '13n': 'fas fa-snowflake',     // 雪夜
+            '50d': 'fas fa-smog',          // 雾
+            '50n': 'fas fa-smog'           // 雾夜
+        };
+        return iconMap[weatherCode] || 'fas fa-cloud';
+    }
+
+    // 根据天气代码获取图标（wttr.in备用）
+    function getWeatherIconFromCode(weatherCode) {
+        const iconMap = {
+            '113': 'fas fa-sun',           // 晴天
+            '116': 'fas fa-cloud-sun',     // 多云
+            '119': 'fas fa-cloud',         // 阴天
+            '122': 'fas fa-cloud',         // 阴天
+            '143': 'fas fa-smog',          // 雾
+            '176': 'fas fa-cloud-rain',    // 小雨
+            '179': 'fas fa-cloud-rain',    // 小雨
+            '182': 'fas fa-cloud-rain',    // 雨夹雪
+            '185': 'fas fa-cloud-rain',    // 雨夹雪
+            '200': 'fas fa-bolt',          // 雷雨
+            '227': 'fas fa-snowflake',     // 小雪
+            '230': 'fas fa-snowflake',     // 大雪
+            '248': 'fas fa-smog',          // 雾
+            '260': 'fas fa-snowflake',     // 雪
+            '263': 'fas fa-cloud-rain',    // 小雨
+            '266': 'fas fa-cloud-rain',    // 小雨
+            '281': 'fas fa-cloud-rain',    // 雨夹雪
+            '284': 'fas fa-cloud-rain',    // 雨夹雪
+            '293': 'fas fa-cloud-rain',    // 小雨
+            '296': 'fas fa-cloud-rain',    // 中雨
+            '299': 'fas fa-cloud-rain',    // 大雨
+            '302': 'fas fa-cloud-rain',    // 中雨
+            '305': 'fas fa-cloud-rain',    // 大雨
+            '308': 'fas fa-cloud-rain',    // 暴雨
+            '311': 'fas fa-cloud-rain',    // 小雨
+            '314': 'fas fa-cloud-rain',    // 中雨
+            '317': 'fas fa-cloud-rain',    // 大雨
+            '320': 'fas fa-snowflake',     // 小雪
+            '323': 'fas fa-snowflake',     // 小雪
+            '326': 'fas fa-snowflake',     // 中雪
+            '329': 'fas fa-snowflake',     // 大雪
+            '332': 'fas fa-snowflake',     // 大雪
+            '335': 'fas fa-snowflake',     // 暴雪
+            '338': 'fas fa-snowflake',     // 暴雪
+            '350': 'fas fa-cloud-rain',    // 雨夹雪
+            '353': 'fas fa-cloud-rain',    // 小雨
+            '356': 'fas fa-cloud-rain',    // 中雨
+            '359': 'fas fa-cloud-rain',    // 大雨
+            '362': 'fas fa-cloud-rain',    // 雨夹雪
+            '365': 'fas fa-cloud-rain',    // 雨夹雪
+            '368': 'fas fa-snowflake',     // 小雪
+            '371': 'fas fa-snowflake',     // 中雪
+            '374': 'fas fa-cloud-rain',    // 雨夹雪
+            '377': 'fas fa-cloud-rain',    // 雨夹雪
+            '386': 'fas fa-bolt',          // 雷雨
+            '389': 'fas fa-bolt',          // 雷雨
+            '392': 'fas fa-bolt',          // 雷雪
+            '395': 'fas fa-snowflake'      // 雷雪
+        };
+        return iconMap[weatherCode] || 'fas fa-cloud';
+    }
+
     // 更新天气显示
     function updateWeatherDisplay(city, weather) {
         const weatherIcon = getWeatherIcon(weather.icon);
+        const displayCity = weather.city || city;
+        
+        // 构建详细的天气信息
+        let weatherDetails = `${weather.temp}°C`;
+        if (weather.text) {
+            weatherDetails += ` ${weather.text}`;
+        }
+        if (weather.humidity) {
+            weatherDetails += ` | 湿度: ${weather.humidity}%`;
+        }
+        if (weather.wind) {
+            weatherDetails += ` | 风速: ${weather.wind}km/h`;
+        }
+        
         document.getElementById('weather-info').innerHTML = `
             <i class="weather-icon ${weatherIcon}"></i>
-            <span class="weather-temp">${weather.temp}°C</span>
-            <span class="weather-city">${city}</span>
+            <div class="weather-details">
+                <div class="weather-main">${weather.temp}°C ${weather.text || ''}</div>
+                <div class="weather-sub">${displayCity} | 湿度: ${weather.humidity || '--'}% | 风速: ${weather.wind || '--'}km/h</div>
+            </div>
         `;
-    }
-
-    // 根据天气代码获取图标
-    function getWeatherIcon(weatherCode) {
-        // 简化的天气图标映射
-        const iconMap = {
-            '100': 'fas fa-sun',         // 晴
-            '101': 'fas fa-cloud-sun',   // 多云
-            '102': 'fas fa-cloud',       // 少云
-            '103': 'fas fa-cloud',       // 晴间多云
-            '104': 'fas fa-cloud',       // 阴
-            '200-299': 'fas fa-wind',    // 风
-            '300-399': 'fas fa-cloud-rain', // 雨
-            '400-499': 'fas fa-snowflake', // 雪
-            '500-599': 'fas fa-smog',    // 雾
-            '900-999': 'fas fa-bolt'     // 极端天气
-        };
-
-        // 检查具体代码
-        if(weatherCode >= 200 && weatherCode < 300) return iconMap['200-299'];
-        if(weatherCode >= 300 && weatherCode < 400) return iconMap['300-399'];
-        if(weatherCode >= 400 && weatherCode < 500) return iconMap['400-499'];
-        if(weatherCode >= 500 && weatherCode < 600) return iconMap['500-599'];
-        if(weatherCode >= 900) return iconMap['900-999'];
-
-        // 默认返回晴天图标
-        return iconMap[weatherCode] || iconMap['100'];
     }
 
     // 页面加载完成后执行
@@ -656,7 +794,11 @@
             const location = await getLocationByIP(ip);
 
             if(location) {
-                const weather = await getWeather(location);
+                let weather = await getWeather(location);
+                if (!weather) {
+                    console.log('主天气API失败，尝试备用API...');
+                    weather = await getWeatherBackup(location);
+                }
                 if(weather) {
                     updateWeatherDisplay(location.city, weather);
                 } else {
@@ -672,8 +814,11 @@
 
         function showWeatherError() {
             document.getElementById('weather-info').innerHTML = `
-                <i class="fas fa-university"></i>
-                <span>天气服务暂不可用</span>
+                <i class="fas fa-exclamation-triangle"></i>
+                <div class="weather-details">
+                    <div class="weather-main">天气服务暂不可用</div>
+                    <div class="weather-sub">请稍后重试</div>
+                </div>
             `;
         }
 
