@@ -43,18 +43,6 @@
             overflow: hidden;
         }
 
-        .header::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 Q50,80 0,100 Z"></path></svg>') no-repeat;
-            background-size: 100% 100%;
-            opacity: 0.5;
-        }
-
         .header-content {
             position: relative;
             z-index: 1;
@@ -125,15 +113,6 @@
             font-weight: 500;
         }
 
-        .weather-temp {
-            font-weight: 500;
-        }
-
-        .weather-city {
-            opacity: 0.9;
-            font-size: 0.85rem;
-        }
-
         .weather-loading {
             display: inline-block;
             width: 12px;
@@ -159,16 +138,19 @@
 
         .search-box {
             display: flex;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 50px;
             box-shadow: var(--search-shadow);
             overflow: hidden;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .search-box:focus-within {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(74, 107, 255, 0.3);
+            background: rgba(255, 255, 255, 0.98);
         }
 
         .search-input {
@@ -178,6 +160,16 @@
             outline: none;
             font-size: 1rem;
             color: var(--dark);
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .search-input:focus::placeholder {
+            color: var(--primary);
         }
 
         .search-engine-selector {
@@ -189,6 +181,11 @@
             padding: 0 15px;
             cursor: pointer;
             position: relative;
+            transition: background 0.2s;
+        }
+
+        .search-engine-selector:hover {
+            background: rgba(74, 107, 255, 0.2);
         }
 
         .search-engine-selector span {
@@ -208,10 +205,6 @@
             min-width: 150px;
             z-index: 100;
             display: none;
-        }
-
-        .search-engine-selector:hover .search-engine-dropdown {
-            display: block;
         }
 
         .search-engine-option {
@@ -268,39 +261,62 @@
         }
 
         .category {
-            background: white;
-            border-radius: 12px;
-            padding: 1.8rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 2rem;
             width: calc(33.333% - 2rem);
             box-shadow: var(--card-shadow);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid rgba(0,0,0,0.03);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), #6a11cb);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
 
         .category:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.98);
+        }
+
+        .category:hover::before {
+            transform: scaleX(1);
         }
 
         .category h2 {
             color: var(--primary);
-            margin: 0 0 1.2rem;
-            font-size: 1.5rem;
-            font-weight: 600;
+            margin: 0 0 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
+            position: relative;
         }
 
         .category h2 i {
-            margin-right: 10px;
-            width: 28px;
-            height: 28px;
-            background: var(--primary-light);
-            border-radius: 8px;
+            margin-right: 12px;
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), #6a11cb);
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(74, 107, 255, 0.3);
         }
 
         .link-list {
@@ -319,19 +335,22 @@
             align-items: center;
             color: var(--dark);
             text-decoration: none;
-            padding: 0.7rem 1rem;
-            border-radius: 8px;
-            transition: all 0.2s;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             background: transparent;
             position: relative;
             overflow: hidden;
             font-weight: 500;
+            border: 1px solid transparent;
         }
 
         .link-item a:hover {
-            background: var(--primary-light);
-            color: var(--hover);
-            transform: translateX(5px);
+            background: linear-gradient(135deg, var(--primary-light), rgba(106, 17, 203, 0.1));
+            color: var(--primary);
+            transform: translateX(8px);
+            border-color: rgba(74, 107, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(74, 107, 255, 0.15);
         }
 
         .link-item a::before {
@@ -340,11 +359,12 @@
             left: 0;
             top: 0;
             bottom: 0;
-            width: 3px;
-            background: var(--primary);
+            width: 4px;
+            background: linear-gradient(180deg, var(--primary), #6a11cb);
             transform: scaleY(0);
             transform-origin: center top;
             transition: transform 0.3s ease;
+            border-radius: 0 2px 2px 0;
         }
 
         .link-item a:hover::before {
@@ -356,30 +376,52 @@
             color: var(--secondary);
             width: 20px;
             text-align: center;
-            transition: color 0.2s;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
         }
 
         .link-item a:hover i {
             color: var(--primary);
+            transform: scale(1.1);
         }
 
         .footer {
             text-align: center;
-            padding: 2rem 0;
+            padding: 3rem 0 2rem;
             color: var(--secondary);
             font-size: 0.9rem;
-            background: white;
-            margin-top: 3rem;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            margin-top: 4rem;
             border-top: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
         }
 
         .footer p {
-            margin: 0.5rem 0;
+            margin: 0.8rem 0;
+            transition: color 0.3s;
+        }
+
+        .footer p:hover {
+            color: var(--primary);
         }
 
         .visit-count {
             font-weight: bold;
             color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #6a11cb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         /* 响应式设计 */
@@ -468,6 +510,59 @@
         .category:nth-child(4) { animation-delay: 0.4s; }
         .category:nth-child(5) { animation-delay: 0.5s; }
         .category:nth-child(6) { animation-delay: 0.6s; }
+
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary), #6a11cb);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #3a56d4, #5a0fb8);
+        }
+
+        /* 页面加载动画 */
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 按钮悬停效果 */
+        #feedback-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(74,107,255,0.5);
+            background: linear-gradient(135deg, #3a56d4, #5a0fb8);
+        }
+
+        #feedback-btn:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        /* 搜索按钮悬停效果 */
+        .search-btn:hover {
+            background: linear-gradient(135deg, #3a56d4, #5a0fb8);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(74, 107, 255, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -494,15 +589,24 @@
 <!-- 搜索框 -->
 <div class="search-container">
     <div class="search-box">
-        <div class="search-engine-selector">
-            <span id="current-engine">百度</span>
+        <div class="search-engine-selector" id="search-engine-selector">
+            <span id="current-engine"><i class="fas fa-search"></i> 百度</span>
             <i class="fas fa-chevron-down"></i>
-            <div class="search-engine-dropdown">
+            <div class="search-engine-dropdown" id="search-engine-dropdown">
                 <div class="search-engine-option" data-engine="baidu" data-url="https://www.baidu.com/s?wd=">
-                    <i class="fab fa-baidu"></i>百度
+                    <i class="fas fa-search"></i>百度
                 </div>
                 <div class="search-engine-option" data-engine="google" data-url="https://www.google.com/search?q=">
                     <i class="fab fa-google"></i>谷歌
+                </div>
+                <div class="search-engine-option" data-engine="bing" data-url="https://www.bing.com/search?q=">
+                    <i class="fab fa-microsoft"></i>必应
+                </div>
+                <div class="search-engine-option" data-engine="360" data-url="https://www.so.com/s?q=">
+                    <i class="fas fa-search"></i>360
+                </div>
+                <div class="search-engine-option" data-engine="sogou" data-url="https://www.sogou.com/web?query=">
+                    <i class="fas fa-search"></i>搜狗
                 </div>
             </div>
         </div>
@@ -513,7 +617,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container fade-in">
     <div class="category-group">
         <div class="category" th:each="entry : ${categoryToolMap}">
             <h2><i th:text="${entry.key.icon}"></i><span th:text="${entry.key.name}">分类名</span></h2>
@@ -542,9 +646,11 @@
 
 <!-- 留言反馈按钮 -->
 <button id="feedback-btn" aria-label="留言反馈" title="留言反馈"
-        style="position: fixed; bottom: 30px; right: 30px; background: var(--primary);
-    color: white; border: none; border-radius: 50px; padding: 14px 20px; font-size: 1rem;
-    cursor: pointer; box-shadow: 0 5px 15px rgba(74,107,255,0.4); z-index: 1000;">
+        style="position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, var(--primary), #6a11cb);
+    color: white; border: none; border-radius: 50px; padding: 16px 24px; font-size: 1rem;
+    cursor: pointer; box-shadow: 0 8px 25px rgba(74,107,255,0.4); z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);">
     <i class="fas fa-comment-alt"></i> 留言反馈
 </button>
 
@@ -827,22 +933,44 @@
         const currentEngine = document.getElementById('current-engine');
         const searchInput = document.getElementById('search-query');
         const searchButton = document.getElementById('search-button');
+        const searchEngineSelector = document.getElementById('search-engine-selector');
+        const searchEngineDropdown = document.getElementById('search-engine-dropdown');
 
         let currentEngineUrl = 'https://www.baidu.com/s?wd=';
 
+        // 点击搜索引擎选择器显示下拉菜单
+        searchEngineSelector.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isVisible = searchEngineDropdown.style.display === 'block';
+            searchEngineDropdown.style.display = isVisible ? 'none' : 'block';
+            console.log('切换下拉菜单显示状态:', !isVisible);
+        });
+
         // 切换搜索引擎
         searchEngineOptions.forEach(option => {
-            option.addEventListener('click', function() {
+            option.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
                 const engineName = this.getAttribute('data-engine');
                 const engineUrl = this.getAttribute('data-url');
-
-                currentEngine.textContent = this.textContent.trim();
-                currentEngineUrl = engineUrl;
-
-                // 更新图标
+                const engineText = this.textContent.trim();
                 const iconClass = this.querySelector('i').className;
-                currentEngine.innerHTML = `<i class="${iconClass}"></i> ${this.textContent.trim()}`;
+
+                // 更新当前搜索引擎显示
+                currentEngine.innerHTML = `<i class="${iconClass}"></i> ${engineText}`;
+                currentEngineUrl = engineUrl;
+                
+                // 隐藏下拉菜单
+                searchEngineDropdown.style.display = 'none';
+                
+                console.log('切换到搜索引擎:', engineName, engineUrl);
             });
+        });
+
+        // 点击其他地方隐藏下拉菜单
+        document.addEventListener('click', function() {
+            searchEngineDropdown.style.display = 'none';
         });
 
         // 执行搜索
